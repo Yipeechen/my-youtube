@@ -1,5 +1,6 @@
 import React from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import * as actionCreators from '../../store/actions';
 
 import SearchBar from '../../components/SearchBar';
 
@@ -9,35 +10,29 @@ class Template extends React.Component {
     this.state = {};
   }
 
-  fetchPlaylist = searchTerm => {
-    const API_KEY = 'YOUR_API_KEY';
-    const URL = 'https://www.googleapis.com/youtube/v3/search';
-
-    axios.get(URL, {
-      params: {
-        part: 'snippet',
-        type: 'video',
-        q: searchTerm,
-        maxResults: 5,
-        key: API_KEY,
-      }
-    })
-    .then(res => {
-      console.log(res.data.items);
-    })
-    .catch(e => console.log(e));
-  }
-
   render () {
+    const { onSearchVideo } = this.props;
     return (
       <>
         <h1>rrr</h1>
         <SearchBar
-          fetchPlaylist={this.fetchPlaylist}
+          fetchPlaylist={onSearchVideo}
         />
       </>
     )
   }
 }
 
-export default Template;
+const mapStateToProps = state => {
+  return {
+    data: state.data,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+      onSearchVideo: (result) => dispatch(actionCreators.searchVideo(result)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Template);
