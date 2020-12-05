@@ -16,7 +16,10 @@ const StyledCard = styled.a.attrs(props => ({
   overflow: hidden;
   width: 33%;
   text-align: center;
-  margin: 8px auto;
+  margin: 16px auto;
+  ${({ theme }) => theme.mobile`
+    width: 100%;
+  `}
 `;
 const StyledCardImg = styled.img.attrs(props => ({
   src: props.img,
@@ -24,7 +27,7 @@ const StyledCardImg = styled.img.attrs(props => ({
   
 `;
 const StyledCardTitle = styled.h5`
-  color: blue;
+  color: #000;
 `;
 
 const ResultCard = ({ img, title, videoId }) => {
