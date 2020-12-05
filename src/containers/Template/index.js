@@ -1,9 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as actionCreators from '../../store/actions';
+import styled from 'styled-components';
 
 import SearchBar from '../../components/SearchBar';
+import SearchResult from './components/SearchResult';
 
+const StyledContainer = styled.div`
+  margin: 40px auto;
+`;
 class Template extends React.Component {
   constructor(props) {
     super();
@@ -11,14 +16,16 @@ class Template extends React.Component {
   }
 
   render () {
-    const { onSearchVideo } = this.props;
+    const { data, onSearchVideo } = this.props;
     return (
-      <>
-        <h1>rrr</h1>
+      <StyledContainer>
         <SearchBar
           fetchPlaylist={onSearchVideo}
         />
-      </>
+        <SearchResult
+          data={data}
+        />
+      </StyledContainer>
     )
   }
 }

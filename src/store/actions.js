@@ -10,7 +10,7 @@ export const searchVideo = term => dispatch => {
       part: 'snippet',
       type: 'video',
       q: term,
-      maxResults: 5,
+      maxResults: 10,
       key: API_KEY,
     }
   })
