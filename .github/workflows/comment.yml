@@ -11,14 +11,26 @@ jobs:
     permissions:
       issues: write
     steps:
-      - name: Download the template
-        id: step_one
-        run: |
-          echo 'TEMPLATE<<EOF' >> $GITHUB_ENV
-          curl https://raw.githubusercontent.com/restqa/.github/master/issue-comments/good-first-issue.md >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+      # - name: Download the template
+      #   id: step_one
+      #   run: |
+      #     echo 'TEMPLATE<<EOF' >> $GITHUB_ENV
+      #     curl https://raw.githubusercontent.com/restqa/.github/master/issue-comments/good-first-issue.md >> $GITHUB_ENV
+      #     echo 'EOF' >> $GITHUB_ENV
+      - name: Render template
+        id: template
+        uses: chuhlomin/render-template@v1.4
+        with:
+          template: .github/comment-template.md
+          vars: |
+            issue-number: ${{ github.event.pull_request.number }}
+            issue-url: ${{ github.event.pull_request.html_url }}
+            issue-title: ${{ github.event.pull_request.title }}
+            issue-author: ${{ github.event.pull_request.creator.login }}
       - name: Add comment on the issue
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.issue.number }}
-          body: ${{ env.TEMPLATE }}
+          # body: ${{ env.TEMPLATE }}
+          body: ${{ steps.template.outputs.result }}
+          reactions: rocket
