@@ -1,0 +1,24 @@
+name: Issue - Good First Issue
+on:
+  issues:
+    types:
+      - labeled
+
+jobs:
+  reply-comment:
+    if: github.event.label.name == 'good first issue'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Download the template
+        id: step_one
+        run: |
+          echo 'TEMPLATE<<EOF' >> $GITHUB_ENV
+          curl https://raw.githubusercontent.com/restqa/.github/master/issue-comments/good-first-issue.md >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: Add comment on the issue
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: ${{ env.TEMPLATE }}
