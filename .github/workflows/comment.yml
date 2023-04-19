@@ -1,0 +1,48 @@
+name: Issue - Good First Issue
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  reply-comment:
+    if: github.event.label.name == 'good first issue'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Notion page id
+        # uses: actions-ecosystem/action-regex-match@v2
+        # NOTE: https://github.com/actions-ecosystem/action-regex-match/pull/360#issuecomment-1336303839
+        uses: KyoriPowered/action-regex-match@v3
+        id: regex-match
+        with:
+          text: ${{ github.event.pull_request.body }}
+          regex: '\b[0-9a-f]{32}(?=\?)'
+      - name: Comment on the notion ticket
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        run: |
+          NOTION_API_KEY=${{ secrets.NOTION_API_KEY }}
+          PAGE_ID=${{ steps.regex-match.outputs.match }}
+          TEXT_CONTENT='${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }} 💫 created by ${{ github.event.pull_request.user.login }}'
+          TEXT_LINK=${{ github.event.pull_request.html_url }}
+
+          CURL_DATA='{
+            "parent": {
+              "page_id": "'$PAGE_ID'"
+            },
+            "rich_text": [
+              {
+                "text": {
+                  "content": "'$TEXT_CONTENT'",
+                  "link": {
+                    "url": "'$TEXT_LINK'"
+                  }
+                }
+              }
+            ]
+          }'
+
+          curl -X POST https://api.notion.com/v1/comments \
+          -H 'Authorization: Bearer '"$NOTION_API_KEY"'' \
+          -H "Notion-Version: 2022-06-28" \
+          -H "Content-Type: application/json" \
+          --data "$CURL_DATA"
